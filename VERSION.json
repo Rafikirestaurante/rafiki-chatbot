@@ -1,0 +1,14 @@
+{
+  "project": "Rafiki Chatbot",
+  "version": "0.1.0",
+  "phase": "1A",
+  "phaseName": "Base Firebase multiusuario",
+  "date": "2026-07-22",
+  "officialBase": true,
+  "clientIdentity": "whatsapp_phone_number",
+  "aiProviderPlanned": "Gemini Flash-Lite",
+  "database": "Cloud Firestore",
+  "frontend": "React + Vite",
+  "hosting": "Vercel",
+  "backend": "Firebase Cloud Functions 2nd gen"
+}

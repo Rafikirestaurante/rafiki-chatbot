@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function adminDoc() {
+      return get(/databases/$(database)/documents/administradores/$(request.auth.uid));
+    }
+
+    function isActiveAdmin() {
+      return isAuthenticated()
+        && adminDoc().data.activo == true
+        && adminDoc().data.rol in ['superadmin', 'admin'];
+    }
+
+    // El panel administrativo solo opera con usuarios autenticados y autorizados.
+    match /administradores/{uid} {
+      allow read: if isActiveAdmin() && request.auth.uid == uid;
+      allow create, update, delete: if false;
+    }
+
+    match /clientes/{clienteId} {
+      allow read, create, update: if isActiveAdmin();
+      allow delete: if isActiveAdmin() && adminDoc().data.rol == 'superadmin';
+    }
+
+    match /recordatorios/{recordatorioId} {
+      allow read, create, update: if isActiveAdmin();
+      allow delete: if isActiveAdmin() && adminDoc().data.rol == 'superadmin';
+    }
+
+    match /conversaciones/{conversationId} {
+      allow read: if isActiveAdmin();
+      allow write: if false;
+    }
+
+    match /mensajes/{messageId} {
+      allow read: if isActiveAdmin();
+      allow write: if false;
+    }
+
+    match /consumoIA/{usageId} {
+      allow read: if isActiveAdmin();
+      allow write: if false;
+    }
+
+    match /envios/{deliveryId} {
+      allow read: if isActiveAdmin();
+      allow write: if false;
+    }
+
+    match /errores/{errorId} {
+      allow read: if isActiveAdmin();
+      allow write: if false;
+    }
+
+    match /configuracion/{configId} {
+      allow read: if isActiveAdmin();
+      allow write: if isActiveAdmin() && adminDoc().data.rol == 'superadmin';
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
