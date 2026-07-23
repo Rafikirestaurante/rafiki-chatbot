@@ -1,16 +1,28 @@
 # Rafiki Chatbot
 
-Chatbot multiusuario de recordatorios por WhatsApp.
+Chatbot independiente de recordatorios inteligentes por WhatsApp.
 
-**Fase:** 1A — Base multiusuario  
-**Versión:** 0.1.0  
-**Fecha:** 22 de julio de 2026
+**Fase:** 1B — Despliegue y estabilización  
+**Versión:** 0.2.0  
+**Fecha:** 22 de julio de 2026  
+**Firebase:** `rafiki-chatbot-dbd75`
 
 ## Regla principal
 
 > Un número de WhatsApp = un cliente.
 
-Los clientes no necesitan usuario, contraseña, empresa ni organización para el flujo inicial. El panel administrativo sí utiliza Firebase Authentication.
+Los clientes no necesitan usuario, contraseña, empresa ni organización para el flujo inicial. El panel administrativo utiliza Firebase Authentication y además exige un documento activo en `administradores/{uid}`.
+
+## Alcance de la Fase 1B
+
+- Preparación para GitHub y Vercel.
+- Validación real de administrador contra Firestore.
+- Lectura protegida por reglas de seguridad.
+- Creación manual de clientes desde el panel.
+- Creación manual de recordatorios desde el panel.
+- Diagnóstico con prueba real de lectura de Firestore.
+- Proyecto Firebase oficial preconfigurado en `.firebaserc`.
+- WhatsApp, Gemini y Cloud Scheduler todavía permanecen desactivados.
 
 ## Stack
 
@@ -18,10 +30,9 @@ Los clientes no necesitan usuario, contraseña, empresa ni organización para el
 - Firebase Web SDK.
 - Cloud Firestore.
 - Firebase Authentication.
-- Cloud Functions 2nd gen / Node 22.
+- Cloud Functions 2nd gen / Node 22 preparadas para fases posteriores.
 - Vercel.
 - GitHub.
-- Próximamente: WhatsApp Cloud API + Gemini.
 
 ## Ejecutar localmente
 
@@ -40,15 +51,10 @@ cp .env.example .env
 
 Completa las variables entregadas por Firebase al registrar la app Web. Después revisa `docs/CONFIGURACION-FIREBASE.md`.
 
-## Validar estructura
+## Validar y compilar
 
 ```bash
 npm run check
-```
-
-## Compilar
-
-```bash
 npm run build
 ```
 
@@ -59,23 +65,28 @@ npm run build
 3. Framework: Vite.
 4. Build command: `npm run build`.
 5. Output directory: `dist`.
-6. Agregar en Vercel las variables `VITE_FIREBASE_*`.
+6. Agregar las variables `VITE_FIREBASE_*` en Vercel.
+7. Publicar y validar login, Clientes, Recordatorios y Diagnóstico.
 
-## Firebase Functions
+## Firebase
+
+Para la Fase 1B es suficiente desplegar reglas e índices:
 
 ```bash
-cd functions
-npm install
-cd ..
-firebase deploy --only functions:health
+firebase deploy --only firestore:rules,firestore:indexes
 ```
+
+La función `health` queda preparada, pero no es necesario activar Blaze ni desplegar Functions hasta que una fase posterior lo requiera.
 
 ## Documentación
 
 - `docs/FASE-1A.md`
+- `docs/FASE-1B.md`
 - `docs/ARQUITECTURA.md`
 - `docs/CRONOGRAMA.md`
 - `docs/CONFIGURACION-FIREBASE.md`
+- `docs/DESPLIEGUE-FASE-1B.md`
+- `docs/VALIDACION-FASE-1B.md`
 
 ## Seguridad
 

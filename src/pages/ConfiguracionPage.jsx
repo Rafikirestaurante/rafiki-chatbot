@@ -2,12 +2,13 @@ import { firebaseConfigured, firebaseProjectId } from '../lib/firebase.js'
 import StatusBadge from '../components/StatusBadge.jsx'
 
 const integrations = [
-  ['Firebase', 'Base de datos, autenticación y backend', true],
+  ['Firebase', 'Base de datos y autenticación', true],
   ['WhatsApp Cloud API', 'Canal principal de clientes', false],
   ['Gemini', 'Motor de interpretación de lenguaje', false],
+  ['Cloud Scheduler', 'Ejecución automática de recordatorios', false],
 ]
 
-export default function ConfiguracionPage({ installationMode }) {
+export default function ConfiguracionPage({ installationMode, adminProfile }) {
   return (
     <div className="page-stack">
       <section className="panel-card">
@@ -38,9 +39,11 @@ export default function ConfiguracionPage({ installationMode }) {
         </div>
         <div className="config-grid">
           <div><span>Project ID</span><strong>{firebaseProjectId}</strong></div>
-          <div><span>Plan previsto</span><strong>Blaze · pago por uso</strong></div>
+          <div><span>Rol actual</span><strong>{adminProfile?.rol || 'Sin sesión'}</strong></div>
+          <div><span>Plan durante 1B</span><strong>Spark hasta necesitar Functions</strong></div>
           <div><span>Zona horaria base</span><strong>America/Bogota</strong></div>
-          <div><span>Cliente</span><strong>Número de WhatsApp</strong></div>
+          <div><span>Identidad del cliente</span><strong>Número de WhatsApp</strong></div>
+          <div><span>Versión</span><strong>0.2.0 · Fase 1B</strong></div>
         </div>
       </section>
     </div>

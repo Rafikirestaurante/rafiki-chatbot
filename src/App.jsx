@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
-import { collection, getCountFromServer, query, where } from 'firebase/firestore'
+import { collection, doc, getCountFromServer, getDoc, query, where } from 'firebase/firestore'
 import Sidebar from './components/Sidebar.jsx'
 import Topbar from './components/Topbar.jsx'
 import LoginPage from './pages/LoginPage.jsx'
@@ -16,27 +16,59 @@ const pageMeta = {
   clientes: ['Clientes', 'Números de WhatsApp registrados'],
   recordatorios: ['Recordatorios', 'Programación y estado de avisos'],
   configuracion: ['Configuración', 'Conexiones y parámetros del sistema'],
-  diagnostico: ['Diagnóstico', 'Estado técnico y preparación de integraciones'],
+  diagnostico: ['Diagnóstico', 'Estado técnico y pruebas de Firebase'],
 }
 
 export default function App() {
   const [user, setUser] = useState(null)
+  const [adminProfile, setAdminProfile] = useState(null)
   const [authReady, setAuthReady] = useState(!firebaseConfigured)
+  const [loginError, setLoginError] = useState('')
   const [installationMode, setInstallationMode] = useState(false)
   const [page, setPage] = useState('inicio')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [refreshVersion, setRefreshVersion] = useState(0)
   const [stats, setStats] = useState({ clientes: 0, activos: 0, recordatorios: 0, pendientes: 0 })
 
   useEffect(() => {
-    if (!auth) return undefined
-    return onAuthStateChanged(auth, (nextUser) => {
-      setUser(nextUser)
-      setAuthReady(true)
+    if (!auth || !db) return undefined
+
+    return onAuthStateChanged(auth, async (nextUser) => {
+      if (!nextUser) {
+        setUser(null)
+        setAdminProfile(null)
+        setAuthReady(true)
+        return
+      }
+
+      setAuthReady(false)
+      try {
+        const snapshot = await getDoc(doc(db, 'administradores', nextUser.uid))
+        const profile = snapshot.exists() ? snapshot.data() : null
+        const authorized = profile?.activo === true && ['superadmin', 'admin'].includes(profile?.rol)
+
+        if (!authorized) {
+          setLoginError('La cuenta existe en Firebase Authentication, pero no está autorizada como administrador activo en Firestore.')
+          await signOut(auth)
+          return
+        }
+
+        setLoginError('')
+        setUser(nextUser)
+        setAdminProfile(profile)
+        setInstallationMode(false)
+        setAuthReady(true)
+      } catch (error) {
+        console.error('No fue posible validar el administrador:', error)
+        setLoginError('No fue posible validar el perfil administrador. Revisa Firestore y sus reglas de seguridad.')
+        await signOut(auth)
+      }
     })
   }, [])
 
   useEffect(() => {
     if (!db || installationMode || !user) return
+
     async function loadStats() {
       try {
         const [clientes, activos, recordatorios, pendientes] = await Promise.all([
@@ -51,35 +83,37 @@ export default function App() {
           recordatorios: recordatorios.data().count,
           pendientes: pendientes.data().count,
         })
-      } catch {
-        // El diagnóstico mostrará problemas de configuración; el dashboard permanece limpio.
+      } catch (error) {
+        console.error('No fue posible cargar estadísticas:', error)
       }
     }
+
     loadStats()
-  }, [user, installationMode])
+  }, [user, installationMode, refreshVersion])
 
   const content = useMemo(() => {
-    if (page === 'clientes') return <ClientesPage installationMode={installationMode} />
-    if (page === 'recordatorios') return <RecordatoriosPage installationMode={installationMode} />
-    if (page === 'configuracion') return <ConfiguracionPage installationMode={installationMode} />
-    if (page === 'diagnostico') return <DiagnosticoPage installationMode={installationMode} />
+    const onDataChanged = () => setRefreshVersion((value) => value + 1)
+    if (page === 'clientes') return <ClientesPage installationMode={installationMode} onDataChanged={onDataChanged} />
+    if (page === 'recordatorios') return <RecordatoriosPage installationMode={installationMode} onDataChanged={onDataChanged} />
+    if (page === 'configuracion') return <ConfiguracionPage installationMode={installationMode} adminProfile={adminProfile} />
+    if (page === 'diagnostico') return <DiagnosticoPage installationMode={installationMode} user={user} adminProfile={adminProfile} />
     return <DashboardPage stats={stats} installationMode={installationMode} />
-  }, [page, stats, installationMode])
+  }, [page, stats, installationMode, adminProfile, user])
 
   if (!authReady) {
-    return <main className="loading-screen"><div className="brand-mark">RC</div><span>Cargando Rafiki Chatbot…</span></main>
+    return <main className="loading-screen"><div className="brand-mark">RC</div><span>Validando acceso administrativo…</span></main>
   }
 
   if (!user && !installationMode) {
-    return <LoginPage onInstallationMode={() => setInstallationMode(true)} />
+    return <LoginPage externalError={loginError} onInstallationMode={() => setInstallationMode(true)} />
   }
 
   if (!user && firebaseConfigured && installationMode) {
-    return <LoginPage onInstallationMode={() => setInstallationMode(true)} />
+    return <LoginPage externalError={loginError} onInstallationMode={() => setInstallationMode(true)} />
   }
 
   if (!user && !firebaseConfigured && !installationMode) {
-    return <LoginPage onInstallationMode={() => setInstallationMode(true)} />
+    return <LoginPage externalError={loginError} onInstallationMode={() => setInstallationMode(true)} />
   }
 
   const [title, subtitle] = pageMeta[page]
@@ -94,6 +128,7 @@ export default function App() {
           subtitle={subtitle}
           onMenu={() => setSidebarOpen(true)}
           user={user}
+          adminProfile={adminProfile}
           installationMode={installationMode}
           onLogout={async () => {
             await signOut(auth)

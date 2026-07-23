@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth, firebaseConfigured } from '../lib/firebase.js'
 
-export default function LoginPage({ onInstallationMode }) {
+export default function LoginPage({ onInstallationMode, externalError = '' }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -15,7 +15,8 @@ export default function LoginPage({ onInstallationMode }) {
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password)
     } catch (err) {
-      setError('No fue posible iniciar sesión. Revisa el correo, la contraseña y la configuración de Firebase.')
+      console.error('Error de inicio de sesión:', err)
+      setError('No fue posible iniciar sesión. Revisa el correo y la contraseña.')
     } finally {
       setLoading(false)
     }
@@ -32,7 +33,7 @@ export default function LoginPage({ onInstallationMode }) {
           </div>
         </div>
 
-        <div className="phase-label">Fase 1A · Base multiusuario</div>
+        <div className="phase-label">Fase 1B · Despliegue y estabilización</div>
 
         {firebaseConfigured ? (
           <form onSubmit={submit} className="login-form">
@@ -44,7 +45,7 @@ export default function LoginPage({ onInstallationMode }) {
               Contraseña
               <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
             </label>
-            {error && <div className="inline-error">{error}</div>}
+            {(error || externalError) && <div className="inline-error">{error || externalError}</div>}
             <button className="primary-button" disabled={loading}>{loading ? 'Ingresando…' : 'Ingresar'}</button>
           </form>
         ) : (

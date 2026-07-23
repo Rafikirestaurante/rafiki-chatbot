@@ -144,3 +144,21 @@ code { background: #eef2f6; border-radius: 5px; padding: 2px 5px; font-size: .95
   .section-heading.split { align-items: flex-start; flex-direction: column; }
   .config-grid { grid-template-columns: 1fr; }
 }
+
+.inline-form { margin: 0 20px 18px; padding: 16px; border: 1px solid #e4eaf2; border-radius: 13px; background: #f9fbfd; display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 12px; align-items: end; }
+.inline-form.reminder-form { grid-template-columns: 1.2fr 1.5fr 1fr auto; }
+.inline-form label { display: grid; gap: 6px; font-size: 10px; color: #627086; font-weight: 800; }
+.inline-form input, .inline-form select { width: 100%; min-width: 0; border: 1px solid #dbe3ec; border-radius: 9px; padding: 10px 11px; background: white; color: #273449; outline: none; }
+.inline-form input:focus, .inline-form select:focus { border-color: #29a87e; box-shadow: 0 0 0 3px #e7f7f1; }
+.inline-success, .inline-info { margin: 12px 20px; padding: 10px 12px; border-radius: 10px; font-size: 11px; }
+.inline-success { background: #ecf9f3; color: #087a57; border: 1px solid #ccefe0; }
+.inline-info { background: #edf5ff; color: #31689d; border: 1px solid #d6e8fb; }
+
+@media (max-width: 1100px) {
+  .inline-form, .inline-form.reminder-form { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 680px) {
+  .inline-form, .inline-form.reminder-form { grid-template-columns: 1fr; margin: 0 14px 16px; }
+  .inline-success, .inline-info, .inline-error { margin-left: 14px; margin-right: 14px; }
+}

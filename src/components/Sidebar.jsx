@@ -34,8 +34,8 @@ export default function Sidebar({ active, onSelect, open, onClose }) {
       </nav>
 
       <div className="sidebar-footer">
-        <span>Fase 1A</span>
-        <strong>v0.1.0</strong>
+        <span>Fase 1B</span>
+        <strong>v0.2.0</strong>
       </div>
     </aside>
   )

@@ -18,12 +18,12 @@ export default function DashboardPage({ stats, installationMode }) {
     <div className="page-stack">
       <section className="hero-card">
         <div>
-          <span className="eyebrow">Rafiki Chatbot</span>
-          <h2>Recordatorios por WhatsApp, simples y automáticos.</h2>
-          <p>El número de WhatsApp será el identificador único de cada cliente.</p>
+          <span className="eyebrow">Rafiki Chatbot · Fase 1B</span>
+          <h2>Base desplegable y lista para pruebas reales.</h2>
+          <p>Primero validamos clientes y recordatorios en Firebase; después conectaremos WhatsApp.</p>
         </div>
         <StatusBadge tone={installationMode ? 'warning' : 'success'}>
-          {installationMode ? 'Configuración pendiente' : 'Sistema conectado'}
+          {installationMode ? 'Configuración pendiente' : 'Firebase conectado'}
         </StatusBadge>
       </section>
 
@@ -38,16 +38,16 @@ export default function DashboardPage({ stats, installationMode }) {
         <article className="panel-card">
           <div className="section-heading">
             <div>
-              <span className="eyebrow">Flujo principal</span>
-              <h3>Cómo funcionará el servicio</h3>
+              <span className="eyebrow">Validación 1B</span>
+              <h3>Flujo manual antes de WhatsApp</h3>
             </div>
           </div>
           <div className="flow-list">
             {[
-              ['1', 'WhatsApp', 'El cliente escribe desde su número.'],
-              ['2', 'Gemini', 'Interpreta la intención y la fecha.'],
-              ['3', 'Firebase', 'Guarda y controla el recordatorio.'],
-              ['4', 'WhatsApp', 'Envía el aviso cuando corresponde.'],
+              ['1', 'Administrador', 'Inicia sesión con Firebase Authentication.'],
+              ['2', 'Cliente', 'Registra manualmente un número con código de país.'],
+              ['3', 'Recordatorio', 'Programa una prueba desde el panel.'],
+              ['4', 'Diagnóstico', 'Confirma lectura autorizada de Firestore.'],
             ].map(([n, title, text]) => (
               <div className="flow-row" key={n}>
                 <span>{n}</span>
@@ -60,17 +60,17 @@ export default function DashboardPage({ stats, installationMode }) {
         <article className="panel-card">
           <div className="section-heading">
             <div>
-              <span className="eyebrow">Fase actual</span>
-              <h3>Base técnica</h3>
+              <span className="eyebrow">Estado</span>
+              <h3>Fase 1B</h3>
             </div>
           </div>
           <div className="check-list">
             <div><span>✓</span> React + Vite</div>
-            <div><span>✓</span> Firebase Web modular</div>
-            <div><span>✓</span> Firestore + reglas RLS equivalentes</div>
-            <div><span>✓</span> Firebase Authentication</div>
-            <div><span>✓</span> Cloud Functions preparadas</div>
-            <div><span>✓</span> Vercel + GitHub preparados</div>
+            <div><span>✓</span> Firebase Authentication validado por perfil admin</div>
+            <div><span>✓</span> Firestore + reglas de seguridad</div>
+            <div><span>✓</span> Alta manual de clientes</div>
+            <div><span>✓</span> Alta manual de recordatorios</div>
+            <div><span>✓</span> Diagnóstico real de Firestore</div>
           </div>
         </article>
       </section>

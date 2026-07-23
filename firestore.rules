@@ -17,7 +17,7 @@ service cloud.firestore {
 
     // El panel administrativo solo opera con usuarios autenticados y autorizados.
     match /administradores/{uid} {
-      allow read: if isActiveAdmin() && request.auth.uid == uid;
+      allow read: if isAuthenticated() && request.auth.uid == uid;
       allow create, update, delete: if false;
     }
 

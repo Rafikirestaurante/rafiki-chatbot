@@ -17,5 +17,6 @@ export function formatDate(value) {
   return new Intl.DateTimeFormat('es-CO', {
     dateStyle: 'medium',
     timeStyle: 'short',
+    timeZone: 'America/Bogota',
   }).format(date)
 }

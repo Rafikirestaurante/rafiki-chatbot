@@ -1,4 +1,6 @@
-export default function Topbar({ title, subtitle, onMenu, user, onLogout, installationMode }) {
+export default function Topbar({ title, subtitle, onMenu, user, adminProfile, onLogout, installationMode }) {
+  const roleLabel = adminProfile?.rol === 'superadmin' ? 'Superadministrador' : 'Administrador'
+
   return (
     <header className="topbar">
       <div className="topbar-title-wrap">
@@ -13,7 +15,7 @@ export default function Topbar({ title, subtitle, onMenu, user, onLogout, instal
         <div className="user-pill">
           <span className="avatar">A</span>
           <div>
-            <strong>Administrador</strong>
+            <strong>{user ? roleLabel : 'Administrador'}</strong>
             <span>{user?.email || 'Configuración inicial'}</span>
           </div>
         </div>

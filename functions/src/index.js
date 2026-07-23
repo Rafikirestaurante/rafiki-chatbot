@@ -13,8 +13,8 @@ export const health = onRequest(
     response.status(200).json({
       ok: true,
       service: 'rafiki-chatbot-functions',
-      version: '0.1.0',
-      phase: '1A',
+      version: '0.2.0',
+      phase: '1B',
       timestamp: new Date().toISOString(),
     })
   },
